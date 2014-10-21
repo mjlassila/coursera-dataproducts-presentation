@@ -1,0 +1,96 @@
+---
+title       : Heart Rate Variability Analysis
+subtitle    : understanding health and illness
+author      : 
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+<style>
+.title-slide {
+  background-color: #FF4500;
+  }
+  
+.title-slide hgroup > h1{
+ font-family: 'Oswald', 'Helvetica', sanserif;
+ }
+ 
+.title-slide hgroup > h1, 
+.title-slide hgroup > h2 {
+  color: white ;
+}
+
+</style>
+
+## What is heart rate variability (HRV)?
+
+*  Variation over time of both the intervals between consecutive heart beats and the instantaneous heart rate.
+*  The heart rhythm is modulated by the autonomic nervous system...
+  * therefore HRV is useful proxy when studying the activity of the sympathetic and parasympathetic parts of the nervous system
+
+
+--- &twocol .class #id 
+
+## Why study HRV?
+
+*** =left
+
+* Studies have shown that anomalous parasympathectic activity is useful predictor for of several pathologies such as myocardial infarction, diabetic neuropathy and chronic stress
+* Also useful for monitoring the recovery from physical training and development of the fitness
+
+*** =right
+
+```{r echo=FALSE,message=FALSE}
+library(RHRV)
+hrv.data  = CreateHRVData()
+hrv.data = LoadBeatAscii(hrv.data,"example.beats")
+hrv.data = BuildNIHR(hrv.data)
+hrv.data = FilterNIHR(hrv.data)
+hrv.data = InterpolateNIHR (hrv.data, freqhr = 4)
+hrv.data = CreateTimeAnalysis(hrv.data,size=300,interval = 7.8125)
+hrv.data = CreateFreqAnalysis(hrv.data)
+
+hrv.data = CalculatePowerBand(
+  hrv.data,
+  indexFreqAnalysis= 1,
+  type = "wavelet",
+  wavelet = "haar",
+  bandtolerance = 0.1,
+  relative = FALSE,
+  ULFmin = 0,
+  ULFmax = 0.03,
+  VLFmin = 0.03,
+  VLFmax = 0.05,
+  LFmin = 0.05,
+  LFmax = 0.15,
+  HFmin = 0.15,
+  HFmax = 0.4 )
+
+PlotPowerBand(hrv.data, indexFreqAnalysis = 1, ymax = 380, ymaxratio = 50)
+
+```
+
+--- .class #id 
+
+## How to record HRV signal?
+
+* In clinical research HRV is measured using certified electrocardiography (EKG) devices
+* Some customer-grade heart rate monitoring sports watches / chest sensors have a HRV recording capability
+  * great opportunity for hobbyist experimentation!
+
+--- .class #id 
+
+## How to analyze HRV?
+
+* Problems of existing sofware
+  * if the software is affordable -> limited features
+  * if the software has desired features -> price is off limits 
+* Solution: web-based research grade HRV analysis app based on free and open source RHRV-package!
+* Prototype available at http://bit.ly/hrv-analysis-app
+
+
